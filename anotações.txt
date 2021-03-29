@@ -1,0 +1,41 @@
+Implementação de lazy loading em um site já existente
+
+1.  Criar dois novos módulos
+        1.1. Módulo LIVES, que irá receber tudo que já temos
+        1.2. Módulo USERS, que é para fazer a gestão dos usuários
+2.  Gerando o módulo LIVE
+        2.1. ng generate module views/lives --route lives --module app.module
+3.  Gerando o módulo de USERS
+        3.1. ng generate module views/users --route users --module app.module
+4.  Em app-routing.module.ts, verificar como ficou a criação das rotas. O correto é ter algo assim:
+    Ex.:
+    { path: 'lives', loadChildren: () => import('./views/lives/lives.module').then(m => m.LivesModule) },
+    { path: 'users', loadChildren: () => import('./views/users/users.module').then(m => m.UsersModule) },
+        4.1. Se estiver ok, adicionar mais um roteamento padrão. Ou seja, qualquer endereço não roteado, ele faz o redirectTo
+        Ex.:
+        {
+            path: '',
+            redirectTo: '/lives',
+            pathMatch: 'full'
+        }
+5.  Como agora temos os módulos criados, eu posso pegar o meu componente (home) e copiá-lo para dentro do meu módulo lives. 
+    Em seguida, posso excluir o componente que ficou fora do módulo
+6.  No arquivo lives-routing.module.ts, posso definir outro componente (se quiser), para ser carregado
+    Ex.:
+    DE:     const routes: Routes = [{ path: '', component: LivesComponent }];
+    PARA:   const routes: Routes = [{ path: '', component: HomeComponent }];
+7.  Fazer a mesma alteração (caso necessário), em lives.module.ts
+    Ex.:
+    DE:     declarations: [LivesComponent]
+    PARA:   declarations: [HomeComponent]
+8.  Posso excluir os arquivos do lote que não vou utilizar (Opcional)
+9.  Em app.module.ts, fazer as exclusões das importações dos componentes que eram chamados pelo app (HomeComponent, LivesComponent, etc)
+10. Como fiz a movimentação do componente HomeComponent, preciso retirar todas as importações que são usadas neste componente e levar para 
+    o novo módulo (neste caso lives.module.ts)
+11. Ainda no arquivo lives.module.ts, adicionar as declarações e providers os demais componentes necessários, que estavam em app.module.ts
+    Ex.:
+    declarations: [HomeComponent, LiveListComponent, LiveFormDialogComponent, LocalDateTimePipe],
+    providers: [LocalDateTimePipe]
+    11.1. Os pipes só podem ser declarados em 1 módulo
+
+
